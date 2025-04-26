@@ -1,0 +1,308 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 164 100% 15%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 42 100% 42%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 164 100% 15%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 164 100% 15%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 42 100% 42%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 164 100% 15%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-poppins);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-playfair);
+  }
+}
+
+/* Update the typing animation to fade in/out letter by letter and remove the vertical bar */
+.typing-text {
+  display: inline-block;
+}
+
+.typing-text span {
+  display: inline-block;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.typing-text span.visible {
+  opacity: 1;
+}
+
+/* Keep the existing styles for other sections */
+.slant-card-left {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 90%);
+}
+
+.slant-card-right {
+  clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 100%);
+}
+
+.impact-section {
+  background-color: #004d40;
+  background-image: linear-gradient(135deg, #004d40 0%, #00352c 100%);
+  position: relative;
+}
+
+.impact-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  z-index: 1;
+}
+
+.testimonial-quote {
+  position: relative;
+}
+
+.testimonial-quote::before {
+  content: "" "";
+  position: absolute;
+  top: -40px;
+  left: -20px;
+  font-size: 120px;
+  font-family: var(--font-playfair);
+  color: rgba(212, 160, 23, 0.2);
+  z-index: 0;
+}
+
+/* Team card styles to match the provided design */
+.team-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.team-card-slant {
+  clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+}
+
+.team-social-icons {
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  background-color: rgba(0, 77, 64, 0.8);
+  transition: bottom 0.3s ease;
+  z-index: 20;
+}
+
+.team-card:hover .team-social-icons {
+  bottom: 0;
+}
+
+/* Hero section animated background */
+.hero-animated-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-animated-bg::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 25%);
+  animation: rotate 30s linear infinite;
+}
+
+.hero-animated-bg::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.02) 0%, transparent 20%);
+  animation: rotate 20s linear infinite reverse;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Center content on small devices */
+@media (max-width: 768px) {
+  .center-mobile {
+    text-align: center;
+  }
+
+  .center-mobile-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Admin login page styles */
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #004d40 0%, #00695c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Add this to prevent any overflow */
+  position: fixed; /* Add this to ensure it covers the entire viewport */
+  inset: 0; /* Add this to ensure it covers the entire viewport */
+}
+
+.auth-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  padding: 2.5rem;
+  margin: 1rem; /* Add some margin to prevent touching edges on small screens */
+}
+
+/* Dashboard styles */
+.dashboard-sidebar {
+  width: 280px;
+  background-color: #004d40;
+  color: white;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  z-index: 30;
+}
+
+.dashboard-content {
+  margin-left: 280px;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+.dashboard-sidebar.collapsed {
+  width: 80px;
+}
+
+.dashboard-content.expanded {
+  margin-left: 80px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dashboard-content.expanded {
+    margin-left: 0;
+  }
+
+  .dashboard-sidebar {
+    width: 240px;
+  }
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-link.active {
+  background-color: #d4a017;
+  color: #004d40;
+  font-weight: 600;
+}
+
+/* Case study page styles */
+.case-study-header {
+  background-color: #004d40;
+  color: white;
+  padding: 6rem 0 3rem;
+  position: relative;
+}
+
+.case-study-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+}
