@@ -17,9 +17,9 @@ export default function StatsSection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            We have digitized over <span className="text-[#D4A017]">100 public services</span>,
+            We have digitized many <span className="text-[#D4A017]">services</span>,
           </h2>
-          <p className="text-xl md:text-2xl">making Rwanda a GovTech leader in Africa.</p>
+          <p className="text-xl md:text-2xl">Making Rwanda a Tech leader in Africa.</p>
         </motion.div>
 
         <div className="mt-12">
@@ -30,9 +30,9 @@ export default function StatsSection() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-center md:text-left"
             >
-              <h3 className="text-5xl md:text-6xl font-bold mb-4 text-[#D4A017]">40m+</h3>
+              <h3 className="text-5xl md:text-6xl font-bold mb-4 text-[#D4A017]">40000+</h3>
               <p className="text-white/90">
-                Working hours saved for Rwandan citizens traveling to and waiting in government offices across the
+                Working hours saved for Rwandan citizens traveling to and waiting for services in  offices across the
                 country.
               </p>
             </motion.div>
@@ -45,7 +45,7 @@ export default function StatsSection() {
             >
               <h3 className="text-5xl md:text-6xl font-bold mb-4 text-[#D4A017]">80%</h3>
               <p className="text-white/90">
-                Reduction in service access time when introduced to IremboGov. Services used to take 5 days, but now
+                Reduction in service access time. Services used to take 5 days, but now
                 they only take 24 hours.
               </p>
             </motion.div>

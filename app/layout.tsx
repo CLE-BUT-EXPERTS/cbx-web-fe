@@ -18,7 +18,10 @@ export const metadata: Metadata = {
   title: "CLÉ-BUT EXPERTS | Empower • Connect • Transform",
   description:
     "CLÉ-BUT EXPERTS provides customized IT solutions, software development, training, and consulting services to enhance efficiency and foster growth.",
-    generator: 'v0.dev'
+    icons: {
+      icon: [{ url: "/images/logo-2.png" }, { url: "/images/logo-2.png" }],
+      apple: [{ url: "/images/logo-2.png" }],
+    },
 }
 
 export default function RootLayout({
