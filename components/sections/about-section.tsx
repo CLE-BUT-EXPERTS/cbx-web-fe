@@ -7,6 +7,13 @@ export default function AboutSection() {
   const aboutRef = useRef(null)
   const aboutInView = useInView(aboutRef, { once: true })
 
+  const description = [
+    {
+      vision: "Our mission is to empower public and private sectors through customized IT solutions, including software development, training, and consulting services. We strive to enhance efficiency and foster growth while bridging the digital divide by equipping organizations and future generations with essential technology skills. We are dedicated to implementing best practices that ensure sustainable progress through seamless IT integration.",
+      mission: "Our vision is to create a future where technology enhances organizational performance and societal impact across all sectors. We aspire to be the leading catalyst for digital transformation, fostering an ecosystem where IT empowers both established organizations and emerging talents. We aim to build a digitally empowered world, ensuring that everyone is equipped to meet future challenges and seizeopportunities."
+    }
+  ]
+
   return (
     <section id="about" ref={aboutRef} className="w-full py-20 md:py-32 relative overflow-hidden">
       <div className="container px-8">
@@ -58,13 +65,11 @@ export default function AboutSection() {
                 <h3 className="text-3xl font-bold">Our Mission</h3>
               </div>
 
-              <p className="mb-6 text-white/90 flex-grow">
-                Our mission is to empower public and private sectors through customized IT solutions, including software
-                development, training, and consulting services. We strive to enhance efficiency and foster growth while
-                bridging the digital divide by equipping organizations and future generations with essential technology
-                skills. We are dedicated to implementing best practices that ensure sustainable progress through
-                seamless IT integration.
-              </p>
+                {description.map((data, index) => (
+                  <p key={index} className="mb-6 text-white/90 flex-grow">
+                    {data.vision}
+                  </p>
+                ))}
 
               <motion.div
                 className="w-full h-1 bg-[#D4A017]/50 rounded-full overflow-hidden"
@@ -115,13 +120,11 @@ export default function AboutSection() {
                 <h3 className="text-3xl font-bold">Our Vision</h3>
               </div>
 
-              <p className="mb-6 text-white/90 flex-grow">
-                Our vision is to create a future where technology enhances organizational performance and societal
-                impact across all sectors. We aspire to be the leading catalyst for digital transformation, fostering an
-                ecosystem where IT empowers both established organizations and emerging talents. We aim to build a
-                digitally empowered world, ensuring that everyone is equipped to meet future challenges and seize
-                opportunities.
-              </p>
+              {description.map((data, index) => (
+                  <p key={index} className="mb-6 text-white/90 flex-grow">
+                    {data.mission}
+                  </p>
+                ))}
 
               <motion.div
                 className="w-full h-1 bg-[#004D40]/50 rounded-full overflow-hidden"

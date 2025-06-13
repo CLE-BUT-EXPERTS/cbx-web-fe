@@ -12,6 +12,13 @@ export default function HeroSection() {
   const heroInView = useInView(heroRef, { once: true })
   const heroY = useTransform(scrollYProgress, [0, 0.2], [0, -50])
 
+  const scrollToContact = () => {
+    const contactSection = document.getElementById("contact")
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
   useEffect(() => {
     const typingTexts = ["Empower", "Connect", "Transform"]
     let currentTextIndex = 0
@@ -161,17 +168,18 @@ export default function HeroSection() {
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            className="flex justify-center"
             initial={{ opacity: 0, y: 20 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            <Button size="lg" className="bg-[#D4A017] hover:bg-[#B8860B] text-white px-8">
-              Get Started
+            <Button
+              size="lg"
+              className="bg-[#D4A017] hover:bg-[#B8860B] text-white px-8"
+              onClick={scrollToContact}
+            >
+              Partner With Us
               <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-black hover:bg-white/10 border-2">
-              Learn More
             </Button>
           </motion.div>
         </div>

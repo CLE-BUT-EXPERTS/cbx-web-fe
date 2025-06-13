@@ -2,12 +2,22 @@
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
-
 import { Button } from "@/components/ui/button"
 
 export default function CTASection() {
   const ctaRef = useRef(null)
   const ctaInView = useInView(ctaRef, { once: true })
+
+  // Scroll to a section by id
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId)
+    if (section) {
+      window.scrollTo({
+        top: section.offsetTop - 80,
+        behavior: "smooth",
+      })
+    }
+  }
 
   return (
     <section id="cta" ref={ctaRef} className="w-full py-20 md:py-32 relative bg-[#004D40] text-white overflow-hidden">
@@ -60,23 +70,25 @@ export default function CTASection() {
             animate={ctaInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Button
-              size="lg"
-              className="bg-[#D4A017] hover:bg-[#B8860B] text-white px-8"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Schedule a Consultation
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-black hover:bg-white/10 border-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              View Our Services
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                size="lg"
+                className="bg-[#D4A017] hover:bg-[#B8860B] text-white px-8"
+                onClick={() => scrollToSection("contact")}
+              >
+                Schedule a Consultation
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-black hover:bg-white/10 border-2"
+                onClick={() => scrollToSection("services")}
+              >
+                View Our Services
+              </Button>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>

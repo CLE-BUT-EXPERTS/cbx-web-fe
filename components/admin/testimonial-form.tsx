@@ -1,14 +1,15 @@
 "use client"
 
 import type React from "react"
-
+import axios from "axios"
 import { useState } from "react"
-import { type Testimonial, useAdminStore } from "@/lib/data"
+import { type Testimonial } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2 } from "lucide-react"
+import Cookies from "js-cookie"
 
 interface TestimonialFormProps {
   testimonial?: Testimonial
@@ -17,8 +18,8 @@ interface TestimonialFormProps {
 }
 
 export default function TestimonialForm({ testimonial, onSuccess, onCancel }: TestimonialFormProps) {
-  const { addTestimonial, updateTestimonial } = useAdminStore()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<Omit<Testimonial, "id">>({
     quote: testimonial?.quote || "",
@@ -34,26 +35,53 @@ export default function TestimonialForm({ testimonial, onSuccess, onCancel }: Te
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
 
-    setTimeout(() => {
-      if (testimonial) {
-        updateTestimonial(testimonial.id, formData)
-      } else {
-        addTestimonial(formData)
+    try {
+      const token = Cookies.get('token')
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
 
-      setLoading(false)
+      if (testimonial) {
+        // Update existing testimonial
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/testimonials/${testimonial.id}`,
+          formData,
+          { headers }
+        )
+      } else {
+        // Create new testimonial
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/testimonials`,
+          formData,
+          { headers }
+        )
+      }
+
       if (onSuccess) {
         onSuccess()
       }
-    }, 500)
+    } catch (err) {
+      setError("Failed to save testimonial. Please try again.")
+      console.error("Error saving testimonial:", err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+          {error}
+        </div>
+      )}
+
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="quote">Testimonial Quote</Label>

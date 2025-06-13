@@ -95,6 +95,12 @@ export default function Navbar() {
           >
             Team
           </Link>
+          <Link
+            href="../../projects/e-somo"
+            className="text-sm font-medium text-[#004D40] hover:text-[#D4A017] transition-colors"
+          >
+            e-somo
+          </Link>
         </nav>
         <div className="flex items-center gap-4">
           <Button
@@ -186,15 +192,20 @@ export default function Navbar() {
                 Team
               </Link>
               <Link
-                href="#contact"
+                href="../../projects/e-somo"
+                className="text-sm font-medium text-[#004D40] hover:text-[#D4A017] transition-colors py-2 border-b border-gray-100"
+                // No onClick: allow default navigation
+              >
+                e-somo
+              </Link>
+              <button
                 className="text-sm font-medium text-[#004D40] hover:text-[#D4A017] transition-colors py-2"
-                onClick={(e) => {
-                  e.preventDefault()
+                onClick={() => {
                   scrollToSection("contact")
                 }}
               >
                 Contact Us
-              </Link>
+              </button>
             </nav>
           </div>
         </motion.div>

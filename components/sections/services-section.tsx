@@ -1,11 +1,33 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useEffect, useState } from "react"
 import { motion, useInView } from "framer-motion"
+import axios from "axios"
+
+type Service = {
+  id?: string | number
+  title: string
+  description: string
+  icon?: React.ReactNode
+}
 
 export default function ServicesSection() {
   const servicesRef = useRef(null)
   const servicesInView = useInView(servicesRef, { once: true })
+  const [services, setServices] = useState<Service[]>([])
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/companies/1`)
+        setServices(res.data.data.services || [])
+      } catch (e) {
+        setServices([])
+        console.error("Failed to fetch services:", e)
+      }
+    }
+    fetchServices()
+  }, [])
 
   return (
     <section id="services" ref={servicesRef} className="w-full py-20 md:py-32 bg-gray-50 relative">
@@ -36,141 +58,9 @@ export default function ServicesSection() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Software Development",
-              description:
-                "Custom software solutions designed to address your specific business challenges and streamline operations.",
-              icon: (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#D4A017"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m18 16 4-4-4-4" />
-                  <path d="m6 8-4 4 4 4" />
-                  <path d="m14.5 4-5 16" />
-                </svg>
-              ),
-            },
-            {
-              title: "IT Consulting",
-              description:
-                "Strategic guidance to help you leverage technology effectively and make informed decisions for your business.",
-              icon: (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#D4A017"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                </svg>
-              ),
-            },
-            {
-              title: "Training & Development",
-              description:
-                "Comprehensive training programs to equip your team with the skills needed to thrive in today's digital landscape.",
-              icon: (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#D4A017"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 14c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z" />
-                  <path d="M12 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
-              ),
-            },
-            {
-              title: "Digital Transformation",
-              description:
-                "End-to-end solutions to help your organization embrace digital technologies and stay competitive.",
-              icon: (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#D4A017"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                  <polyline points="3.29 7 12 12 20.71 7" />
-                  <line x1="12" y1="22" x2="12" y2="12" />
-                </svg>
-              ),
-            },
-            {
-              title: "Project Management",
-              description:
-                "Expert project management services to ensure your IT initiatives are delivered on time and within budget.",
-              icon: (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#D4A017"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                  <line x1="3" y1="9" x2="21" y2="9" />
-                  <line x1="9" y1="21" x2="9" y2="9" />
-                </svg>
-              ),
-            },
-            {
-              title: "IT Infrastructure",
-              description:
-                "Robust infrastructure solutions to provide a solid foundation for your business operations and growth.",
-              icon: (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#D4A017"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
-                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
-                  <line x1="6" y1="6" x2="6.01" y2="6" />
-                  <line x1="6" y1="18" x2="6.01" y2="18" />
-                </svg>
-              ),
-            },
-          ].map((service, index) => (
+          {services.map((service, index) => (
             <motion.div
-              key={index}
+              key={service.id || index}
               className="group"
               initial={{ opacity: 0, y: 30 }}
               animate={servicesInView ? { opacity: 1, y: 0 } : {}}
@@ -188,7 +78,23 @@ export default function ServicesSection() {
                 {/* Content */}
                 <div className="relative z-10 p-8 flex flex-col h-full items-center text-center">
                   <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                    {service.icon}
+                    {/* If your API provides an icon, render it here. Otherwise, you can use a placeholder */}
+                    {service.icon ? service.icon : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40"
+                        height="40"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#D4A017"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M8 12h8" />
+                      </svg>
+                    )}
                   </div>
                   <h3 className="text-xl font-bold text-[#004D40] mb-3">{service.title}</h3>
                   <p className="text-gray-600 mb-6">{service.description}</p>

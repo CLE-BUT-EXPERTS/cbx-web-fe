@@ -1,49 +1,38 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion, useInView } from "framer-motion"
 import { ChevronRight } from "lucide-react"
+import axios from "axios"
+
+type Project = {
+  id: string | number
+  title: string
+  client?: string
+  description: string
+  image?: string
+}
 
 export default function ProjectsSection() {
   const projectsRef = useRef(null)
   const projectsInView = useInView(projectsRef, { once: true })
+  const [projects, setProjects] = useState<Project[]>([])
 
-  const projects = [
-    {
-      id: "erp-system",
-      title: "Enterprise Resource Planning System",
-      client: "National Bank",
-      description:
-        "Developed and implemented a comprehensive ERP system to streamline operations and improve efficiency.",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-    {
-      id: "digital-learning",
-      title: "Digital Learning Platform",
-      client: "Ministry of Education",
-      description:
-        "Created an interactive digital learning platform to enhance educational outcomes and accessibility.",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-    {
-      id: "supply-chain",
-      title: "Supply Chain Management Solution",
-      client: "Global Logistics Company",
-      description:
-        "Designed a custom supply chain management solution to optimize logistics operations and reduce costs.",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-    {
-      id: "healthcare-system",
-      title: "Healthcare Information System",
-      client: "Regional Hospital Network",
-      description:
-        "Implemented a secure healthcare information system to improve patient care and administrative efficiency.",
-      image: "/placeholder.svg?height=400&width=600",
-    },
-  ]
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/companies/1`)
+        // Adjust this line if your API response structure is different
+        setProjects(Array.isArray(res.data.data.projects) ? res.data.data.projects : [])
+      } catch (e) {
+        setProjects([])
+        console.error("Failed to fetch projects:", e)
+      }
+    }
+    fetchProjects()
+  }, [])
 
   return (
     <section id="projects" ref={projectsRef} className="w-full py-20 md:py-32 bg-gray-50 relative">
@@ -74,7 +63,7 @@ export default function ProjectsSection() {
         <div className="grid md:grid-cols-2 gap-12">
           {projects.map((project, index) => (
             <motion.div
-              key={index}
+              key={project.id}
               initial={{ opacity: 0, y: 30 }}
               animate={projectsInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 * index }}
@@ -92,9 +81,11 @@ export default function ProjectsSection() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#004D40] to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-500 flex items-end">
                     <div className="p-6 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                      <span className="inline-block text-white text-sm font-medium bg-[#D4A017] px-3 py-1 rounded-full mb-2">
-                        {project.client}
-                      </span>
+                      {project.client && (
+                        <span className="inline-block text-white text-sm font-medium bg-[#D4A017] px-3 py-1 rounded-full mb-2">
+                          {project.client}
+                        </span>
+                      )}
                       <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
                       <p className="text-white/90">{project.description}</p>
                     </div>

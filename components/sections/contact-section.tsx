@@ -1,7 +1,8 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
+import axios from "axios"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +12,41 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function ContactSection() {
   const contactRef = useRef(null)
   const contactInView = useInView(contactRef, { once: true })
+
+  // Form state
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  })
+  const [loading, setLoading] = useState(false)
+  const [feedback, setFeedback] = useState<null | { type: "success" | "error"; message: string }>(null)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.id]: e.target.value })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setFeedback(null)
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/contact-messages`, {
+        companyId: 1,
+        name: form.name,
+        email: form.email,
+        subject: form.subject,
+        message: form.message,
+      })
+      setFeedback({ type: "success", message: "Your message has been sent successfully!" })
+      setForm({ name: "", email: "", subject: "", message: "" })
+    } catch (error) {
+      setFeedback({ type: "error", message: "Failed to send message. Please try again later." })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <section id="contact" ref={contactRef} className="w-full py-20 md:py-32 relative">
@@ -85,7 +121,7 @@ export default function ContactSection() {
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <h3 className="text-2xl font-bold text-[#004D40] mb-6">Send Us a Message</h3>
 
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium text-gray-700">
@@ -95,6 +131,9 @@ export default function ContactSection() {
                       id="name"
                       placeholder="Enter your name"
                       className="border-gray-300 focus:border-[#004D40] focus:ring-[#004D40]"
+                      value={form.name}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -106,6 +145,9 @@ export default function ContactSection() {
                       type="email"
                       placeholder="Enter your email"
                       className="border-gray-300 focus:border-[#004D40] focus:ring-[#004D40]"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -118,6 +160,9 @@ export default function ContactSection() {
                     id="subject"
                     placeholder="How can we help you?"
                     className="border-gray-300 focus:border-[#004D40] focus:ring-[#004D40]"
+                    value={form.subject}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
@@ -129,10 +174,24 @@ export default function ContactSection() {
                     id="message"
                     placeholder="Tell us about your project..."
                     className="min-h-[120px] border-gray-300 focus:border-[#004D40] focus:ring-[#004D40]"
+                    value={form.message}
+                    onChange={handleChange}
+                    required
                   />
                 </div>
 
-                <Button className="w-full bg-[#004D40] hover:bg-[#00695C] text-white">Send Message</Button>
+                <Button className="w-full bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading}>
+                  {loading ? "Sending..." : "Send Message"}
+                </Button>
+                {feedback && (
+                  <div
+                    className={`mt-4 text-center font-medium ${
+                      feedback.type === "success" ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {feedback.message}
+                  </div>
+                )}
               </form>
             </div>
           </motion.div>

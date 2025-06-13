@@ -1,15 +1,15 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import axios from 'axios'
+import Cookies from 'js-cookie'
 
 export default function AdminLogin() {
   const router = useRouter()
@@ -19,21 +19,33 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    // Mock authentication - in a real app, this would call an API
-    setTimeout(() => {
-      if (email === "admin@clebut.com" && password === "admin123") {
-        router.push("/admin/dashboard")
-      } else {
-        setError("Invalid email or password")
-        setLoading(false)
-      }
-    }, 1500)
-  }
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
+        email,
+        password
+      }, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const { token, user } = response.data;
+      
+      Cookies.set('token', token);
+      Cookies.set('userEmail', user.email);
+      
+      router.push("/admin/dashboard");
+    } catch (error: any) { 
+      console.error("Error during login:", error);
+      setError(error.response?.data?.message || "An error occurred. Please try again.");
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-container flex min-h-screen items-center justify-center overflow-hidden">

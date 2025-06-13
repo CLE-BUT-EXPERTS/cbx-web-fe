@@ -1,96 +1,56 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useEffect, useState } from "react"
 import Image from "next/image"
 import { motion, useInView } from "framer-motion"
-import { Linkedin, Mail, Twitter } from "lucide-react"
+import { Mail } from "lucide-react"
+import axios from "axios"
+
+type TeamMember = {
+  id: string | number
+  firstname: string
+  lastname: string
+  email: string
+  image: string | null
+  title: string
+  bio: string
+}
 
 export default function TeamSection() {
   const teamRef = useRef(null)
   const teamInView = useInView(teamRef, { once: true })
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
 
-  const teamMembers = [
-    {
-      name: "Viateur AKUZWE",
-      position: "General Coordinator",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745219411/clebut/d59rvhwnhkx3vmacehzl.png",
-      social: {
-        linkedin: "https://linkedin.com/in/viateur-akuzwe",
-        twitter: "https://twitter.com/viateur_akuzwe",
-        email: "mailto:viateur@clebut.com",
-      },
-    },
-    {
-      name: "Cedrick HAKUZIMANA",
-      position: "Operation Coordinator",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745219410/clebut/lucge4ibqiqytxily6ri.png",
-      social: {
-        linkedin: "https://linkedin.com/in/cedrick-hakuzimana",
-        twitter: "https://twitter.com/cedrick_hakuzimana",
-        email: "mailto:cedrick@clebut.com",
-      },
-    },
-    {
-      name: "Jean Pierre AKIMANA",
-      position: "Chief Innovation Officer",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745219408/clebut/zrhl4fskyserdd2ig2iq.png",
-      social: {
-        linkedin: "https://linkedin.com/in/jeanpierre-akimana",
-        twitter: "https://twitter.com/jp_akimana",
-        email: "mailto:jeanpierre@clebut.com",
-      },
-    },
-    {
-      name: "Jolly NAMARA",
-      position: "General Secretary",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745219410/clebut/tjwgtukzrmnhlmqywndi.png",
-      social: {
-        linkedin: "https://linkedin.com/in/jolly-namara",
-        twitter: "https://twitter.com/jolly_namara",
-        email: "mailto:jolly@clebut.com",
-      },
-    },
-    {
-      name: "Leonore RAMBA",
-      position: "Training Manager",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745219408/clebut/xourp6rid43ek6etl8dd.png",
-      social: {
-        linkedin: "https://linkedin.com/in/leonore-ramba",
-        twitter: "https://twitter.com/leonore_ramba",
-        email: "mailto:leonore@clebut.com",
-      },
-    },
-    {
-      name: "Celebre ISHIMWE",
-      position: "Digital Experience Lead",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745569657/clebut/eocjtjhcl8lkqi0kwwyo.png",
-      social: {
-        linkedin: "https://linkedin.com/in/celebre-ishimwe",
-        twitter: "https://twitter.com/celebre_ishimwe",
-        email: "mailto:celebre@clebut.com",
-      },
-    },
-    {
-      name: "Vainqueur NIYONYUNGU",
-      position: "Software Engineer",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745219412/clebut/ze63paamksnzd3kujomm.png",
-      social: {
-        linkedin: "https://linkedin.com/in/vainqueur-niyonyungu",
-        twitter: "https://twitter.com/vainqueur_niyo",
-        email: "mailto:vainqueur@clebut.com",
-      },
-    },
-    {
-      name: "Christian ISHIMWE",
-      position: "Software Engineer",
-      image: "https://res.cloudinary.com/ddlhho2lk/image/upload/v1745219408/clebut/fneeigs713qjds3pkrwh.png",
-      social: {
-        linkedin: "https://linkedin.com/in/christian-ishimwe",
-        twitter: "https://twitter.com/christian_ishimwe",
-        email: "mailto:christian@clebut.com",
-      },
-    },
-  ]
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/companies/1`)
+        console.log("Team API response:", res.data)
+        // Try to find users in different possible locations
+        const data =
+          res.data?.data?.users ||
+          res.data?.users ||
+          res.data?.data?.team ||
+          res.data?.team ||
+          []
+        let membersArr: TeamMember[] = []
+        if (Array.isArray(data)) {
+          membersArr = data
+        } else if (typeof data === "object" && data !== null) {
+          membersArr = Object.values(data)
+        }
+        setTeamMembers(membersArr)
+      } catch (e) {
+        setTeamMembers([])
+        if (axios.isAxiosError(e)) {
+          console.error("Failed to fetch team members:", e.response?.data || e.message)
+        } else {
+          console.error("Failed to fetch team members:", e)
+        }
+      }
+    }
+    fetchTeam()
+  }, [])
 
   return (
     <section id="team" ref={teamRef} className="w-full py-20 md:py-32 bg-gray-50 relative">
@@ -120,7 +80,7 @@ export default function TeamSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {teamMembers.map((member, index) => (
             <motion.div
-              key={index}
+              key={member.id || index}
               className="group"
               initial={{ opacity: 0, y: 30 }}
               animate={teamInView ? { opacity: 1, y: 0 } : {}}
@@ -132,38 +92,20 @@ export default function TeamSection() {
                 <div className="relative h-full w-full overflow-hidden">
                   <Image
                     src={member.image || "/placeholder.svg"}
-                    alt={member.name}
+                    alt={`${member.firstname} ${member.lastname}`}
                     width={300}
                     height={225}
                     className="w-full h-full object-cover object-center"
                   />
 
-                  {/* Social icons that appear on hover */}
+                  {/* Email icon only */}
                   <div className="team-social-icons">
                     <a
-                      href={member.social.linkedin}
+                      href={`mailto:${member.email}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40 transition-colors"
-                      aria-label={`${member.name}'s LinkedIn profile`}
-                    >
-                      <Linkedin size={16} className="text-white" />
-                    </a>
-                    <a
-                      href={member.social.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40 transition-colors"
-                      aria-label={`${member.name}'s Twitter profile`}
-                    >
-                      <Twitter size={16} className="text-white" />
-                    </a>
-                    <a
-                      href={member.social.email}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40 transition-colors"
-                      aria-label={`Email ${member.name}`}
+                      aria-label={`Email ${member.firstname} ${member.lastname}`}
                     >
                       <Mail size={16} className="text-white" />
                     </a>
@@ -175,8 +117,8 @@ export default function TeamSection() {
 
                 {/* Name and position - outside the image */}
                 <div className="absolute bottom-0 left-0 right-0 bg-[#D4A017] text-white p-3 text-center">
-                  <h3 className="font-bold text-sm md:text-base">{member.name}</h3>
-                  <p className="text-xs md:text-sm text-white/90 mt-1">{member.position}</p>
+                  <h3 className="font-bold text-sm md:text-base">{member.firstname} {member.lastname}</h3>
+                  <p className="text-xs md:text-sm text-white/90 mt-1">{member.title}</p>
                 </div>
               </div>
             </motion.div>

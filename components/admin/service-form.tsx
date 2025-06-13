@@ -1,15 +1,16 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { type Service, useAdminStore } from "@/lib/data"
+import axios from "axios"
+import Cookies from "js-cookie"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
+import { Service } from "@/lib/data"
 
 interface ServiceFormProps {
   service?: Service
@@ -33,8 +34,8 @@ const iconOptions = [
 ]
 
 export default function ServiceForm({ service, onSuccess, onCancel }: ServiceFormProps) {
-  const { addService, updateService } = useAdminStore()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<Omit<Service, "id">>({
     title: service?.title || "",
@@ -57,27 +58,62 @@ export default function ServiceForm({ service, onSuccess, onCancel }: ServiceFor
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
 
-    setTimeout(() => {
-      if (service) {
-        updateService(service.id, formData)
-      } else {
-        addService(formData)
+    try {
+      const token = Cookies.get('token')
+      if (!token) {
+        throw new Error('Authentication token not found')
       }
 
-      setLoading(false)
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+
+      if (service) {
+        // Update existing service
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/services/${service.id}`,
+          formData,
+          { headers }
+        )
+      } else {
+        // Create new service
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/services`,
+          formData,
+          { headers }
+        )
+      }
+
       if (onSuccess) {
         onSuccess()
       }
-    }, 500)
+    } catch (error) {
+      console.error("Error saving service:", error)
+      setError(
+        axios.isAxiosError(error) 
+          ? error.response?.data?.message || error.message 
+          : 'Failed to save service'
+      )
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
+        {error && (
+          <div className="p-4 bg-red-50 text-red-600 rounded-md">
+            {error}
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label htmlFor="title">Service Title</Label>
           <Input

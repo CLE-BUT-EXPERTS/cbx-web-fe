@@ -1,27 +1,31 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
-import { type Partner, useAdminStore } from "@/lib/data"
+import axios from "axios"
+import { useState, useRef } from "react"
+import { type Partner } from "@/lib/data"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
+import Cookies from "js-cookie"
 
 interface PartnerFormProps {
   partner?: Partner
   onSuccess?: () => void
   onCancel?: () => void
+  apiEndpoint: string
 }
 
-export default function PartnerForm({ partner, onSuccess, onCancel }: PartnerFormProps) {
-  const { addPartner, updatePartner } = useAdminStore()
+export default function PartnerForm({ partner, onSuccess, onCancel, apiEndpoint }: PartnerFormProps) {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [logoUploading, setlogoUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState<Omit<Partner, "id">>({
     name: partner?.name || "",
-    image: partner?.image || "/placeholder.svg?height=80&width=160",
+    logo: partner?.logo || "/placeholder.svg?height=80&width=160",
     website: partner?.website || "",
   })
 
@@ -33,26 +37,75 @@ export default function PartnerForm({ partner, onSuccess, onCancel }: PartnerFor
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle logo upload using /api/upload
+  const handlelogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setlogoUploading(true)
+    setError(null)
+    try {
+      const uploadData = new FormData()
+      uploadData.append("file", file)
+      uploadData.append("folderName", "partners")
+      const res = await axios.post("/api/upload", uploadData)
+      setFormData((prev) => ({
+        ...prev,
+        logo: res.data.url,
+      }))
+    } catch {
+      setError("Failed to upload logo")
+    } finally {
+      setlogoUploading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError(null)
 
-    setTimeout(() => {
-      if (partner) {
-        updatePartner(partner.id, formData)
-      } else {
-        addPartner(formData)
+    try {
+      const token = Cookies.get('token')
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
 
-      setLoading(false)
+      if (partner) {
+        // Update existing partner (PUT)
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/partners/${partner.id}`,
+          formData,
+          { headers }
+        )
+      } else {
+        // Create new partner (POST)
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/partners`,
+          formData,
+          { headers }
+        )
+      }
+
       if (onSuccess) {
         onSuccess()
       }
-    }, 500)
+    } catch (err) {
+      setError("An error occurred while saving the partner. Please try again.")
+      console.error("Error saving partner:", err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+          {error}
+        </div>
+      )}
+      
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Partner Name</Label>
@@ -67,16 +120,44 @@ export default function PartnerForm({ partner, onSuccess, onCancel }: PartnerFor
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="image">Logo Image URL</Label>
-          <Input
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            placeholder="/images/partners/acme-logo.png"
-            required
-          />
-          <p className="text-xs text-gray-500">Use a placeholder if you don't have an image yet</p>
+          <Label htmlFor="logo">Logo logo URL</Label>
+          <div className="flex items-center gap-4">
+            <Input
+              id="logo"
+              name="logo"
+              value={formData.logo}
+              onChange={handleChange}
+              placeholder="/logos/partners/acme-logo.png"
+              className="flex-1"
+              required
+            />
+            <input
+              type="file"
+              accept="logo/*"
+              ref={fileInputRef}
+              onChange={handlelogoChange}
+              className="hidden"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={logoUploading}
+            >
+              {logoUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                "Upload"
+              )}
+            </Button>
+          </div>
+          {formData.logo && (
+            <img src={formData.logo} alt="Partner Logo" className="mt-2 rounded-md max-h-20" />
+          )}
+          <p className="text-xs text-gray-500">Use a placeholder if you don't have an logo yet</p>
         </div>
 
         <div className="space-y-2">
@@ -98,8 +179,8 @@ export default function PartnerForm({ partner, onSuccess, onCancel }: PartnerFor
           </Button>
         )}
 
-        <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading}>
-          {loading ? (
+        <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading || logoUploading}>
+          {loading || logoUploading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {partner ? "Updating..." : "Creating..."}
