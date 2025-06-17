@@ -37,7 +37,7 @@ export default function EnrollmentForm({ enrollmentId, onCancel }: EnrollmentFor
   const handleStatusChange = (value: string) => {
     setFormData({
       ...formData,
-      status: value as "pending" | "approved" | "reject",
+      status: value as "pending" | "approved" | "rejected",
     })
   }
 
