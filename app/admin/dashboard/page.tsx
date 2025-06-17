@@ -183,7 +183,7 @@ const [showMoreStudents, setShowMoreStudents] = useState<{ [courseId: string]: b
   // Fetch data from API
   const fetchData = async () => {
   try {
-    setIsLoading(true);
+    // setIsLoading(true);
     if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
       console.error("API BASE URL is not set. Check your .env file and restart the dev server.");
       setIsLoading(false);
@@ -256,6 +256,8 @@ const [showMoreStudents, setShowMoreStudents] = useState<{ [courseId: string]: b
 useEffect(() => {
   if (isClient) {
     fetchData();
+    const intervalId = setInterval(fetchData, 3000); // Poll every 5 seconds
+
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setSidebarCollapsed(true);
@@ -263,7 +265,11 @@ useEffect(() => {
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    return () => {
+      clearInterval(intervalId); // Cleanup polling
+      window.removeEventListener("resize", handleResize); // Cleanup event
+    };
   }
 }, [isClient]);
 
@@ -1128,14 +1134,12 @@ const handleDeleteCourse = async (id: string | number) => {
                               <Trash2 size={16} />
                             </button>
                           </div>
-                          <blockquote className="text-gray-700 italic mb-4">{testimonial.quote}</blockquote>
+                          <blockquote className="text-gray-700 italic mb-4">{testimonial.feedback}</blockquote>
                           <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full ...">
-  {(testimonial.author || "?").charAt(0)}
-</div>
+                            
                             <div>
-                              <p className="font-medium text-gray-900">{testimonial.author}</p>
-                              <p className="text-sm text-gray-500">{testimonial.position}</p>
+                              <p className="font-medium text-gray-900">{testimonial.name}</p>
+                              <p className="text-sm text-gray-500">{testimonial.role}</p>
                             </div>
                           </div>
                         </div>

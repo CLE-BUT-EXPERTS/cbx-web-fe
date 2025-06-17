@@ -20,6 +20,7 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [imageUploading, setImageUploading] = useState(false)
+  const [feedback, setFeedback] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [techInput, setTechInput] = useState("")
@@ -126,6 +127,20 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
         )
       }
 
+      setFormData({
+        title: "",
+        client_name: "",
+        description: "",
+        category: "",
+        image: "",
+        outcome: "",
+        slug: "",
+        technologies: [],
+        status: "published",
+      })
+      setFeedback("Saved successfully!")
+      setTimeout(() => setFeedback(null), 3000)
+
       if (onSuccess) onSuccess()
     } catch (error) {
       setError(
@@ -139,182 +154,190 @@ export default function ProjectForm({ project, onSuccess, onCancel }: ProjectFor
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-md">
-          {error}
+    <>
+      {feedback && (
+        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+          {feedback}
         </div>
       )}
 
-      <div className="space-y-6">
-        <h3 className="text-lg font-medium">Project Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Project Title</Label>
-            <Input
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="ERP System"
-              required
-            />
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {error && (
+          <div className="p-4 bg-red-50 text-red-600 rounded-md">
+            {error}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="client_name">Client Name</Label>
-            <Input
-              id="client_name"
-              name="client_name"
-              value={formData.client_name}
-              onChange={handleChange}
-              placeholder="National Bank"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="description">Short Description</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="A brief description of the project..."
-            rows={2}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
-          <Input
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            placeholder="e.g. Banking, Healthcare"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="outcome">Outcome</Label>
-          <Textarea
-            id="outcome"
-            name="outcome"
-            value={formData.outcome}
-            onChange={handleChange}
-            placeholder="Project outcome or impact"
-            rows={2}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="slug">Slug</Label>
-          <Input
-            id="slug"
-            name="slug"
-            value={formData.slug}
-            onChange={handleChange}
-            placeholder="erp-system"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
-          <Input
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            placeholder="published"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="image">Featured Image</Label>
-          <div className="flex items-center gap-4">
-            <Input
-              id="image"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="Image URL"
-              className="flex-1"
-              required
-            />
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={imageUploading}
-            >
-              {imageUploading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                "Upload"
-              )}
-            </Button>
-          </div>
-          {formData.image && (
-            <img src={formData.image} alt="Project" className="mt-2 rounded-md max-h-40" />
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="technologies">Technologies</Label>
-          <div className="flex gap-2">
-            <Input
-              id="technologies"
-              value={techInput}
-              onChange={e => setTechInput(e.target.value)}
-              placeholder="Add technology"
-            />
-            <Button type="button" onClick={handleAddTech}>Add</Button>
-          </div>
-          <ul className="flex flex-wrap gap-2 mt-2">
-            {formData.technologies.map((tech, idx) => (
-              <li key={idx} className="bg-gray-100 px-2 py-1 rounded flex items-center">
-                {tech}
-                <button type="button" className="ml-2 text-red-500" onClick={() => handleRemoveTech(idx)}>×</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="flex justify-end space-x-4 pt-4 border-t">
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
         )}
 
-        <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading || imageUploading}>
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {project ? "Updating..." : "Creating..."}
-            </>
-          ) : (
-            <>{project ? "Update" : "Create"} Project</>
+        <div className="space-y-6">
+          <h3 className="text-lg font-medium">Project Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Project Title</Label>
+              <Input
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="ERP System"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="client_name">Client Name</Label>
+              <Input
+                id="client_name"
+                name="client_name"
+                value={formData.client_name}
+                onChange={handleChange}
+                placeholder="National Bank"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Short Description</Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="A brief description of the project..."
+              rows={2}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Input
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              placeholder="e.g. Banking, Healthcare"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="outcome">Outcome</Label>
+            <Textarea
+              id="outcome"
+              name="outcome"
+              value={formData.outcome}
+              onChange={handleChange}
+              placeholder="Project outcome or impact"
+              rows={2}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="slug">Slug</Label>
+            <Input
+              id="slug"
+              name="slug"
+              value={formData.slug}
+              onChange={handleChange}
+              placeholder="erp-system"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Input
+              id="status"
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              placeholder="published"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="image">Featured Image</Label>
+            <div className="flex items-center gap-4">
+              <Input
+                id="image"
+                name="image"
+                value={formData.image}
+                onChange={handleChange}
+                placeholder="Image URL"
+                className="flex-1"
+                required
+              />
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={imageUploading}
+              >
+                {imageUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  "Upload"
+                )}
+              </Button>
+            </div>
+            {formData.image && (
+              <img src={formData.image} alt="Project" className="mt-2 rounded-md max-h-40" />
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="technologies">Technologies</Label>
+            <div className="flex gap-2">
+              <Input
+                id="technologies"
+                value={techInput}
+                onChange={e => setTechInput(e.target.value)}
+                placeholder="Add technology"
+              />
+              <Button type="button" onClick={handleAddTech}>Add</Button>
+            </div>
+            <ul className="flex flex-wrap gap-2 mt-2">
+              {formData.technologies.map((tech, idx) => (
+                <li key={idx} className="bg-gray-100 px-2 py-1 rounded flex items-center">
+                  {tech}
+                  <button type="button" className="ml-2 text-red-500" onClick={() => handleRemoveTech(idx)}>×</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-4 pt-4 border-t">
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
           )}
-        </Button>
-      </div>
-    </form>
+
+          <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading || imageUploading}>
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {project ? "Updating..." : "Creating..."}
+              </>
+            ) : (
+              <>{project ? "Update" : "Create"} Project</>
+            )}
+          </Button>
+        </div>
+      </form>
+    </>
   )
 }

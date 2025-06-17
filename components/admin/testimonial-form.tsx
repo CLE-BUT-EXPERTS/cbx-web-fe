@@ -20,6 +20,7 @@ interface TestimonialFormProps {
 export default function TestimonialForm({ testimonial, onSuccess, onCancel }: TestimonialFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<Omit<Testimonial, "id">>({
     quote: testimonial?.quote || "",
@@ -39,7 +40,6 @@ export default function TestimonialForm({ testimonial, onSuccess, onCancel }: Te
     e.preventDefault()
     setLoading(true)
     setError(null)
-
     try {
       const token = Cookies.get('token')
       const headers = {
@@ -63,6 +63,14 @@ export default function TestimonialForm({ testimonial, onSuccess, onCancel }: Te
         )
       }
 
+      setFormData({
+        quote: "",
+        author: "",
+        position: "",
+      })
+      setFeedback("Saved successfully!")
+      setTimeout(() => setFeedback(null), 3000)
+
       if (onSuccess) {
         onSuccess()
       }
@@ -75,70 +83,78 @@ export default function TestimonialForm({ testimonial, onSuccess, onCancel }: Te
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
-          {error}
+    <>
+      {feedback && (
+        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+          {feedback}
         </div>
       )}
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="quote">Testimonial Quote</Label>
-          <Textarea
-            id="quote"
-            name="quote"
-            value={formData.quote}
-            onChange={handleChange}
-            placeholder="CLÉ-BUT EXPERTS has been an invaluable partner in our digital transformation journey..."
-            rows={4}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="author">Author Name</Label>
-          <Input
-            id="author"
-            name="author"
-            value={formData.author}
-            onChange={handleChange}
-            placeholder="John Doe"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="position">Position/Company</Label>
-          <Input
-            id="position"
-            name="position"
-            value={formData.position}
-            onChange={handleChange}
-            placeholder="CTO, Global Financial Services"
-            required
-          />
-        </div>
-      </div>
-
-      <div className="flex justify-end space-x-4">
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            {error}
+          </div>
         )}
 
-        <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {testimonial ? "Updating..." : "Creating..."}
-            </>
-          ) : (
-            <>{testimonial ? "Update" : "Create"} Testimonial</>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="quote">Testimonial Quote</Label>
+            <Textarea
+              id="quote"
+              name="quote"
+              value={formData.quote}
+              onChange={handleChange}
+              placeholder="CLÉ-BUT EXPERTS has been an invaluable partner in our digital transformation journey..."
+              rows={4}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="author">Author Name</Label>
+            <Input
+              id="author"
+              name="author"
+              value={formData.author}
+              onChange={handleChange}
+              placeholder="John Doe"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="position">Position/Company</Label>
+            <Input
+              id="position"
+              name="position"
+              value={formData.position}
+              onChange={handleChange}
+              placeholder="CTO, Global Financial Services"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
           )}
-        </Button>
-      </div>
-    </form>
+
+          <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {testimonial ? "Updating..." : "Creating..."}
+              </>
+            ) : (
+              <>{testimonial ? "Update" : "Create"} Testimonial</>
+            )}
+          </Button>
+        </div>
+      </form>
+    </>
   )
 }

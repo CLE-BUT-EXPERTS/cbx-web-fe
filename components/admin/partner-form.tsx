@@ -21,6 +21,7 @@ export default function PartnerForm({ partner, onSuccess, onCancel, apiEndpoint 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [logoUploading, setlogoUploading] = useState(false)
+  const [feedback, setFeedback] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState<Omit<Partner, "id">>({
@@ -66,30 +67,25 @@ export default function PartnerForm({ partner, onSuccess, onCancel, apiEndpoint 
 
     try {
       const token = Cookies.get('token')
-      const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-
-      if (partner) {
-        // Update existing partner (PUT)
-        await axios.put(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/partners/${partner.id}`,
-          formData,
-          { headers }
-        )
-      } else {
-        // Create new partner (POST)
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/partners`,
-          formData,
-          { headers }
-        )
-      }
-
-      if (onSuccess) {
-        onSuccess()
-      }
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/create`,
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      if (onSuccess) onSuccess()
+      // Reset form fields
+      setFormData({
+        name: "",
+        logo: "/placeholder.svg?height=80&width=160",
+        website: "",
+      })
+      setFeedback("Partner saved successfully!")
+      setTimeout(() => setFeedback(null), 3000)
     } catch (err) {
       setError("An error occurred while saving the partner. Please try again.")
       console.error("Error saving partner:", err)
@@ -99,97 +95,105 @@ export default function PartnerForm({ partner, onSuccess, onCancel, apiEndpoint 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
-          {error}
-        </div>
-      )}
-      
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Partner Name</Label>
-          <Input
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Acme Corporation"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="logo">Logo logo URL</Label>
-          <div className="flex items-center gap-4">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            {error}
+          </div>
+        )}
+        
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Partner Name</Label>
             <Input
-              id="logo"
-              name="logo"
-              value={formData.logo}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              placeholder="/logos/partners/acme-logo.png"
-              className="flex-1"
+              placeholder="Acme Corporation"
               required
             />
-            <input
-              type="file"
-              accept="logo/*"
-              ref={fileInputRef}
-              onChange={handlelogoChange}
-              className="hidden"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={logoUploading}
-            >
-              {logoUploading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                "Upload"
-              )}
-            </Button>
           </div>
-          {formData.logo && (
-            <img src={formData.logo} alt="Partner Logo" className="mt-2 rounded-md max-h-20" />
+
+          <div className="space-y-2">
+            <Label htmlFor="logo">Logo logo URL</Label>
+            <div className="flex items-center gap-4">
+              <Input
+                id="logo"
+                name="logo"
+                value={formData.logo}
+                onChange={handleChange}
+                placeholder="/logos/partners/acme-logo.png"
+                className="flex-1"
+                required
+              />
+              <input
+                type="file"
+                accept="logo/*"
+                ref={fileInputRef}
+                onChange={handlelogoChange}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={logoUploading}
+              >
+                {logoUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  "Upload"
+                )}
+              </Button>
+            </div>
+            {formData.logo && (
+              <img src={formData.logo} alt="Partner Logo" className="mt-2 rounded-md max-h-20" />
+            )}
+            <p className="text-xs text-gray-500">Use a placeholder if you don't have an logo yet</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="website">Website URL (Optional)</Label>
+            <Input
+              id="website"
+              name="website"
+              value={formData.website || ""}
+              onChange={handleChange}
+              placeholder="https://www.acme.com"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
           )}
-          <p className="text-xs text-gray-500">Use a placeholder if you don't have an logo yet</p>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="website">Website URL (Optional)</Label>
-          <Input
-            id="website"
-            name="website"
-            value={formData.website || ""}
-            onChange={handleChange}
-            placeholder="https://www.acme.com"
-          />
-        </div>
-      </div>
-
-      <div className="flex justify-end space-x-4">
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+          <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading || logoUploading}>
+            {loading || logoUploading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {partner ? "Updating..." : "Creating..."}
+              </>
+            ) : (
+              <>{partner ? "Update" : "Create"} Partner</>
+            )}
           </Button>
-        )}
+        </div>
+      </form>
 
-        <Button type="submit" className="bg-[#004D40] hover:bg-[#00695C] text-white" disabled={loading || logoUploading}>
-          {loading || logoUploading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {partner ? "Updating..." : "Creating..."}
-            </>
-          ) : (
-            <>{partner ? "Update" : "Create"} Partner</>
-          )}
-        </Button>
-      </div>
-    </form>
+      {feedback && (
+        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+          {feedback}
+        </div>
+      )}
+    </>
   )
 }

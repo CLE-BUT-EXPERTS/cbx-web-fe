@@ -36,6 +36,7 @@ const iconOptions = [
 export default function ServiceForm({ service, onSuccess, onCancel }: ServiceFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<Omit<Service, "id">>({
     title: service?.title || "",
@@ -90,6 +91,16 @@ export default function ServiceForm({ service, onSuccess, onCancel }: ServiceFor
         )
       }
 
+      setFormData({
+        title: "",
+        content: "",
+        type: "",
+        published: false,
+        coverImage: "",
+      })
+      setFeedback("Saved successfully!")
+      setTimeout(() => setFeedback(null), 3000)
+
       if (onSuccess) {
         onSuccess()
       }
@@ -111,6 +122,11 @@ export default function ServiceForm({ service, onSuccess, onCancel }: ServiceFor
         {error && (
           <div className="p-4 bg-red-50 text-red-600 rounded-md">
             {error}
+          </div>
+        )}
+        {feedback && (
+          <div className="p-4 bg-green-50 text-green-600 rounded-md">
+            {feedback}
           </div>
         )}
 
