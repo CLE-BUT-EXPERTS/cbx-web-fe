@@ -67,28 +67,28 @@ export default function PartnersSection() {
   }, [])
 
   return (
-    <section id="partners" ref={partnersRef} className="w-full py-20 md:py-32 relative">
-      <div className="container px-8 relative z-20">
+    <section id="partners" ref={partnersRef} className="w-full py-12 md:py-20 lg:py-32 relative">
+      <div className="container px-4 sm:px-6 lg:px-8 relative z-20">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={partnersInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-5xl font-bold text-[#004D40] mb-4 relative inline-block">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#004D40] mb-4 relative inline-block">
             Strategic Alliances
             <div className="absolute -bottom-2 left-0 right-0 h-1 bg-[#D4A017] transform -rotate-1"></div>
           </h2>
-          <p className="max-w-3xl mx-auto text-gray-600 mt-6">
+          <p className="max-w-3xl mx-auto text-gray-600 mt-4 md:mt-6 text-sm sm:text-base">
             We collaborate with leading organizations to deliver exceptional solutions and services that drive
             innovation and growth.
           </p>
         </motion.div>
 
         {/* Horizontal scrolling partner logos */}
-        <div className="overflow-hidden">
+        <div className="overflow-hidden py-4">
           <motion.div
-            className="flex gap-8 items-center animate-scroll"
+            className="flex gap-6 md:gap-8 items-center animate-scroll"
             initial={{ x: "100%" }}
             animate={{ x: "-100%" }}
             transition={{
@@ -103,14 +103,14 @@ export default function PartnersSection() {
                 href={partner.website || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="grayscale hover:grayscale-0 transition-all duration-300"
+                className="grayscale hover:grayscale-0 transition-all duration-300 flex-shrink-0"
               >
                 <Image
                   src={partner.logo ? `/${partner.logo}` : "/placeholder.svg"}
                   alt={partner.name ? partner.name : `Partner ${index + 1}`}
-                  width={160}
-                  height={80}
-                  className="max-h-16 w-auto"
+                  width={120}
+                  height={60}
+                  className="max-h-12 md:max-h-16 w-auto"
                 />
               </a>
             ))}
@@ -120,46 +120,42 @@ export default function PartnersSection() {
 
       {/* Testimonials - Now fetched from API */}
       <motion.div
-        className="max-w-5xl mx-auto"
+        className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 md:mt-16"
         initial={{ opacity: 0, y: 30 }}
         animate={partnersInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6, delay: 0.4 }}
       >
-        <div className="text-center mb-12">
-          <h3 className="text-2xl md:text-3xl font-bold text-[#004D40] mb-4">Client Testimonials</h3>
-          <p className="text-gray-600">Hear what our clients have to say about working with CLÉ-BUT EXPERTS.</p>
+        <div className="text-center mb-8 md:mb-12">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#004D40] mb-3 md:mb-4">
+            Client Testimonials
+          </h3>
+          <p className="text-gray-600 text-sm sm:text-base">
+            Hear what our clients have to say about working with CLÉ-BUT EXPERTS.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id || index}
-              className="relative testimonial-quote"
+              className="relative testimonial-quote bg-white p-6 rounded-lg shadow-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={partnersInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.6 + 0.2 * index }}
               whileHover={{ y: -5 }}
             >
-              <div className="mb-8 relative z-10">
-                <blockquote className="text-gray-600 italic text-lg">{testimonial.feedback}</blockquote>
+              <div className="mb-6 md:mb-8 relative z-10">
+                <blockquote className="text-gray-600 italic text-sm sm:text-base md:text-lg">
+                  {testimonial.feedback}
+                </blockquote>
               </div>
               <div className="flex items-center">
-                {testimonial.image ? (
-                  <Image
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    width={64}
-                    height={64}
-                    className="w-16 h-16 rounded-full object-cover mr-4"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#004D40] to-[#D4A017] flex items-center justify-center text-white text-2xl font-bold mr-4">
-                    {testimonial.name ? testimonial.name.charAt(0) : "?"}
-                  </div>
-                )}
+                
                 <div>
-                  <p className="font-medium text-[#004D40] text-lg">{testimonial.name}</p>
-                  <p className="text-[#D4A017]">{testimonial.role}</p>
+                  <p className="font-medium text-[#004D40] text-sm sm:text-base md:text-lg">
+                    {testimonial.name}
+                  </p>
+                  <p className="text-[#D4A017] text-xs sm:text-sm">{testimonial.role}</p>
                 </div>
               </div>
             </motion.div>

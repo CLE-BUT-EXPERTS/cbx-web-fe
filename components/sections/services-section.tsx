@@ -3,12 +3,13 @@
 import { useRef, useEffect, useState } from "react"
 import { motion, useInView } from "framer-motion"
 import axios from "axios"
+import * as Icons from "lucide-react"
 
 type Service = {
   id?: string | number
   title: string
   description: string
-  icon?: React.ReactNode
+  icon?: keyof typeof Icons
 }
 
 export default function ServicesSection() {
@@ -58,50 +59,40 @@ export default function ServicesSection() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.id || index}
-              className="group"
-              initial={{ opacity: 0, y: 30 }}
-              animate={servicesInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 * index }}
-              whileHover={{ y: -10 }}
-            >
-              <div className="relative overflow-hidden rounded-xl h-full">
-                {/* Background with gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-100 z-0"></div>
+          {services.map((service, index) => {
+            const LucideIcon =
+              (service.icon && Icons[service.icon as keyof typeof Icons]) ||
+              Icons.Armchair // fallback icon, note the capital "A"
+            return (
+              <motion.div
+                key={service.id || index}
+                className="group"
+                initial={{ opacity: 0, y: 30 }}
+                animate={servicesInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.1 * index }}
+                whileHover={{ y: -10 }}
+              >
+                <div className="relative overflow-hidden rounded-xl h-full">
+                  {/* Background with gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-100 z-0"></div>
 
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#004D40]/5 rounded-bl-full z-0 transform translate-x-16 -translate-y-16 group-hover:translate-x-8 group-hover:-translate-y-8 transition-transform duration-500"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#D4A017]/5 rounded-tr-full z-0 transform -translate-x-16 translate-y-16 group-hover:-translate-x-8 group-hover:translate-y-8 transition-transform duration-500"></div>
+                  {/* Decorative elements */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#004D40]/5 rounded-bl-full z-0 transform translate-x-16 -translate-y-16 group-hover:translate-x-8 group-hover:-translate-y-8 transition-transform duration-500"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#D4A017]/5 rounded-tr-full z-0 transform -translate-x-16 translate-y-16 group-hover:-translate-x-8 group-hover:translate-y-8 transition-transform duration-500"></div>
 
-                {/* Content */}
-                <div className="relative z-10 p-8 flex flex-col h-full items-center text-center">
-                  <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                    {/* If your API provides an icon, render it here. Otherwise, you can use a placeholder */}
-                    {service.icon ? service.icon : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="40"
-                        height="40"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#D4A017"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M8 12h8" />
-                      </svg>
-                    )}
+                  {/* Content */}
+                  <div className="relative z-10 p-8 flex flex-col h-full items-center text-center">
+                    <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                      {/* If your API provides an icon, render it here. Otherwise, you can use a placeholder */}
+                      <LucideIcon size={24} color="#004D40" />
+                    </div>
+                    <h3 className="text-xl font-bold text-[#004D40] mb-3">{service.title}</h3>
+                    <p className="text-gray-600 mb-6">{service.description}</p>
                   </div>
-                  <h3 className="text-xl font-bold text-[#004D40] mb-3">{service.title}</h3>
-                  <p className="text-gray-600 mb-6">{service.description}</p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
 
