@@ -106,7 +106,7 @@ export default function PartnersSection() {
                 className="grayscale hover:grayscale-0 transition-all duration-300 flex-shrink-0"
               >
                 <Image
-                  src={partner.logo ? `/${partner.logo}` : "/placeholder.svg"}
+                  src={partner.logo ? `${partner.logo}` : "/placeholder.svg"}
                   alt={partner.name ? partner.name : `Partner ${index + 1}`}
                   width={120}
                   height={60}
