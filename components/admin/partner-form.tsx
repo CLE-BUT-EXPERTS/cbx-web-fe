@@ -68,7 +68,7 @@ export default function PartnerForm({ partner, onSuccess, onCancel, apiEndpoint 
     try {
       const token = Cookies.get('token')
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/create`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/partners`,
         formData,
         {
           headers: {
